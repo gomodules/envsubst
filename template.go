@@ -16,7 +16,7 @@ type state struct {
 	node     parse.Node // current node
 
 	// maps variable names to values
-	mapper func(string) string
+	mapper func(string) (string, bool)
 }
 
 // Template is the representation of a parsed shell format string.
@@ -46,7 +46,7 @@ func ParseFile(path string) (*Template, error) {
 }
 
 // Execute applies a parsed template to the specified data mapping.
-func (t *Template) Execute(mapping func(string) string) (str string, err error) {
+func (t *Template) Execute(mapping func(string) (string, bool)) (str string, err error) {
 	b := new(bytes.Buffer)
 	s := new(state)
 	s.node = t.tree.Root
@@ -106,7 +106,10 @@ func (t *Template) evalFunc(s *state, node *parse.FuncNode) error {
 	s.writer = w
 	s.node = node
 
-	v := s.mapper(node.Param)
+	v, ok := s.mapper(node.Param)
+	if ok && isDefault(node.Name) {
+		args = nil
+	}
 
 	fn := lookupFunc(node.Name, len(args))
 
@@ -153,5 +156,14 @@ func lookupFunc(name string, args int) substituteFunc {
 		return toDefault
 	default:
 		return toDefault
+	}
+}
+
+func isDefault(name string) bool {
+	switch name {
+	case "=", ":=", ":-":
+		return true
+	default:
+		return false
 	}
 }
