@@ -108,7 +108,7 @@ func (t *Template) evalFunc(s *state, node *parse.FuncNode) error {
 
 	v, ok := s.mapper(node.Param)
 	if ok && isDefault(node.Name) {
-		args = []string{}
+		args = nil
 	}
 
 	fn := lookupFunc(node.Name, len(args))
