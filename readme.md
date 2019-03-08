@@ -35,4 +35,4 @@ Includes support for bash string replacement functions.
 * `${var:?default}`
 * `${var:+default}`
 
-  [doc]: http://godoc.org/github.com/drone/envsubst
+  [doc]: http://godoc.org/gomodules.xyz/envsubst
