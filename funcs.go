@@ -6,7 +6,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/drone/envsubst/v2/path"
+	"gomodules.xyz/envsubst/path"
 )
 
 // defines a parameter substitution function.

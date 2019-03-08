@@ -41,4 +41,4 @@ For a deeper reference, see [bash-hackers](https://wiki.bash-hackers.org/syntax/
 * `${var:?default}`
 * `${var:+default}`
 
-[doc]: http://godoc.org/github.com/drone/envsubst
+[doc]: http://godoc.org/gomodules.xyz/envsubst
