@@ -2,11 +2,30 @@ package envsubst
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 
 	"gomodules.xyz/envsubst/parse"
 )
+
+type ValueNotFoundError struct {
+	Key string
+}
+
+var _ error = &ValueNotFoundError{}
+
+func (e *ValueNotFoundError) Error() string {
+	return fmt.Sprintf("input/default value not found for key %s", e.Key)
+}
+
+func IsValueNotFoundError(v interface{}) bool {
+	switch v.(type) {
+	case *ValueNotFoundError:
+		return true
+	}
+	return false
+}
 
 // state represents the state of template execution. It is not part of the
 // template so that multiple executions can run in parallel.
@@ -15,8 +34,9 @@ type state struct {
 	writer   io.Writer
 	node     parse.Node // current node
 
-	// maps variable names to values
-	mapper func(string) string
+	// maps variable names to values with additional behaviours
+	// returns value, args and error
+	mapper func(node string, key string, args []string) (string, []string, error)
 }
 
 // Template is the representation of a parsed shell format string.
@@ -46,7 +66,7 @@ func ParseFile(path string) (*Template, error) {
 }
 
 // Execute applies a parsed template to the specified data mapping.
-func (t *Template) Execute(mapping func(string) string) (str string, err error) {
+func (t *Template) Execute(mapping func(node string, key string, args []string) (string, []string, error)) (str string, err error) {
 	b := new(bytes.Buffer)
 	s := new(state)
 	s.node = t.tree.Root
@@ -106,11 +126,14 @@ func (t *Template) evalFunc(s *state, node *parse.FuncNode) error {
 	s.writer = w
 	s.node = node
 
-	v := s.mapper(node.Param)
+	v, args, err := s.mapper(node.Name, node.Param, args)
+	if err != nil {
+		return err
+	}
 
 	fn := lookupFunc(node.Name, len(args))
 
-	_, err := io.WriteString(s.writer, fn(v, args...))
+	_, err = io.WriteString(s.writer, fn(v, args...))
 	return err
 }
 

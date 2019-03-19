@@ -76,6 +76,12 @@ func TestExpand(t *testing.T) {
 			input:  "${var:=xyz}",
 			output: "xyz",
 		},
+		// replace empty value with default value
+		{
+			params: map[string]string{"var": ""},
+			input:  "${var=xyz}",
+			output: "xyz",
+		},
 		// replace suffix
 		{
 			params: map[string]string{"stringZ": "abcABC123ABCabc"},
@@ -190,6 +196,62 @@ func TestExpand(t *testing.T) {
 				expr.input,
 				expr.output,
 				output)
+		}
+	}
+}
+
+func TestEvalMap(t *testing.T) {
+	var expressions = []struct {
+		params  map[string]string
+		input   string
+		output  string
+		isError bool
+	}{
+		{
+			params: map[string]string{
+				"abc": "xyz",
+			},
+			input:   "${abc}",
+			output:  "xyz",
+			isError: false,
+		},
+		// do not replace empty value with default value
+		{
+			params: map[string]string{
+				"abc": "",
+			},
+			input:   "${abc=pqr}",
+			output:  "",
+			isError: false,
+		},
+		{
+			params:  map[string]string{},
+			input:   "${abc=pqr}",
+			output:  "pqr",
+			isError: false,
+		},
+		{
+			params:  map[string]string{},
+			input:   "${abc}",
+			output:  "",
+			isError: true,
+		},
+	}
+
+	for _, expr := range expressions {
+		t.Logf(expr.input)
+		output, err := EvalMap(expr.input, expr.params)
+		if expr.isError && err == nil {
+			t.Errorf("Expected error but got output %s", output)
+		}
+		if !expr.isError && err != nil {
+			t.Errorf("Expected output %s but got error %v", output, err)
+		}
+		if err != nil && !IsValueNotFoundError(err) {
+			t.Errorf("Expected ValueNotFoundError")
+		}
+		if err == nil && output != expr.output {
+			t.Errorf("Expected output %s but got %s", expr.output, output)
 		}
 	}
 }
