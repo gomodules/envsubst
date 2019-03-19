@@ -2,11 +2,30 @@ package envsubst
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 
 	"gomodules.xyz/envsubst/parse"
 )
+
+type ValueNotFoundError struct {
+	Key string
+}
+
+var _ error = &ValueNotFoundError{}
+
+func (e *ValueNotFoundError) Error() string {
+	return fmt.Sprintf("input/default value not found for key %s", e.Key)
+}
+
+func IsValueNotFoundError(v interface{}) bool {
+	switch v.(type) {
+	case *ValueNotFoundError:
+		return true
+	}
+	return false
+}
 
 // state represents the state of template execution. It is not part of the
 // template so that multiple executions can run in parallel.
@@ -107,6 +126,11 @@ func (t *Template) evalFunc(s *state, node *parse.FuncNode) error {
 	s.node = node
 
 	v, ok := s.mapper(node.Param)
+	// return error if key not found and default not specified
+	if !ok && (!isDefault(node.Name) || len(args) == 0) {
+		return &ValueNotFoundError{node.Param}
+	}
+	// if key found, remove args for default, so that empty value will not be replaced by default value
 	if ok && isDefault(node.Name) {
 		args = nil
 	}
