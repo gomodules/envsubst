@@ -17,13 +17,3 @@ func Eval(s string, mapping func(string) (string, bool)) (string, error) {
 func EvalEnv(s string) (string, error) {
 	return Eval(s, os.LookupEnv)
 }
-
-func ApplyReplacements(in string, values map[string]string) (string, error) {
-	if values == nil {
-		values = make(map[string]string)
-	}
-	return Eval(in, func(s string) (string, bool) {
-		value, ok := values[s]
-		return value, ok
-	})
-}
