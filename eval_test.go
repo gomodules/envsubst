@@ -65,12 +65,6 @@ func TestExpand(t *testing.T) {
 			input:  "${var=abc}",
 			output: "abc",
 		},
-		// default not used
-		{
-			params: map[string]string{"var": ""},
-			input:  "${var=abc}",
-			output: "",
-		},
 		// default used
 		{
 			params: map[string]string{},
@@ -184,9 +178,8 @@ func TestExpand(t *testing.T) {
 
 	for _, expr := range expressions {
 		t.Logf(expr.input)
-		output, err := Eval(expr.input, func(s string) (string, bool) {
-			value, ok := expr.params[s]
-			return value, ok
+		output, err := Eval(expr.input, func(s string) string {
+			return expr.params[s]
 		})
 		if err != nil {
 			t.Errorf("Want %q expanded but got error %q", expr.input, err)
