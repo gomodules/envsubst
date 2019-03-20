@@ -248,7 +248,7 @@ func TestEvalMap(t *testing.T) {
 			t.Errorf("Expected output %s but got error %v", output, err)
 		}
 		if err != nil && !IsValueNotFoundError(err) {
-			t.Errorf("Expected ValueNotFoundError")
+			t.Errorf("Expected valueNotFoundError")
 		}
 		if err == nil && output != expr.output {
 			t.Errorf("Expected output %s but got %s", expr.output, output)

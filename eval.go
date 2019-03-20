@@ -30,7 +30,7 @@ func EvalMap(s string, values map[string]string) (string, error) {
 		v, ok := values[key]
 		// return error if key not found and default not specified
 		if !ok && (!isDefault(node) || len(args) == 0) {
-			return "", nil, &ValueNotFoundError{key}
+			return "", nil, &valueNotFoundError{key}
 		}
 		// if key found, remove args for default
 		// so that empty value will not be replaced by default value

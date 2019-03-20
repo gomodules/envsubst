@@ -9,19 +9,19 @@ import (
 	"gomodules.xyz/envsubst/parse"
 )
 
-type ValueNotFoundError struct {
-	Key string
+type valueNotFoundError struct {
+	key string
 }
 
-var _ error = &ValueNotFoundError{}
+var _ error = &valueNotFoundError{}
 
-func (e *ValueNotFoundError) Error() string {
-	return fmt.Sprintf("input/default value not found for key %s", e.Key)
+func (e *valueNotFoundError) Error() string {
+	return fmt.Sprintf("input/default value not found for key %s", e.key)
 }
 
 func IsValueNotFoundError(v interface{}) bool {
 	switch v.(type) {
-	case *ValueNotFoundError:
+	case *valueNotFoundError:
 		return true
 	}
 	return false
