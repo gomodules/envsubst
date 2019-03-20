@@ -82,6 +82,12 @@ func TestExpand(t *testing.T) {
 			input:  "${var=xyz}",
 			output: "xyz",
 		},
+		// empty default value
+		{
+			params: map[string]string{},
+			input:  "${var=}",
+			output: "",
+		},
 		// replace suffix
 		{
 			params: map[string]string{"stringZ": "abcABC123ABCabc"},
