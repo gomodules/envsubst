@@ -252,6 +252,13 @@ func TestEvalMap(t *testing.T) {
 			output:  "",
 			isError: true,
 		},
+		// empty default value
+		{
+			params:  map[string]string{},
+			input:   "${abc=}",
+			output:  "",
+			isError: false,
+		},
 	}
 
 	for _, expr := range expressions {
