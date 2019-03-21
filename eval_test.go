@@ -240,17 +240,12 @@ func TestEvalMap(t *testing.T) {
 			output:  "",
 			isError: false,
 		},
+		// use default
 		{
 			params:  map[string]string{},
 			input:   "${abc=pqr}",
 			output:  "pqr",
 			isError: false,
-		},
-		{
-			params:  map[string]string{},
-			input:   "${abc}",
-			output:  "",
-			isError: true,
 		},
 		// empty default value
 		{
@@ -258,6 +253,25 @@ func TestEvalMap(t *testing.T) {
 			input:   "${abc=}",
 			output:  "",
 			isError: false,
+		},
+		{
+			params:  map[string]string{},
+			input:   "${abc:=}",
+			output:  "",
+			isError: false,
+		},
+		{
+			params:  map[string]string{},
+			input:   "${abc:-}",
+			output:  "",
+			isError: false,
+		},
+		// none of input/default specified
+		{
+			params:  map[string]string{},
+			input:   "${abc}",
+			output:  "",
+			isError: true,
 		},
 	}
 
