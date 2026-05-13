@@ -10,7 +10,6 @@ var tests = []struct {
 	Text string
 	Node Node
 }{
-
 	//
 	// text only
 	//
