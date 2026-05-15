@@ -25,4 +25,3 @@ func main() {
 		stdout.Flush()
 	}
 }
-

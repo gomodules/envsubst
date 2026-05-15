@@ -108,7 +108,7 @@ func (t *Template) evalList(s *state, node *parse.ListNode) (err error) {
 }
 
 func (t *Template) evalFunc(s *state, node *parse.FuncNode) error {
-	var w = s.writer
+	w := s.writer
 	var buf bytes.Buffer
 	var args []string
 	for _, n := range node.Args {
